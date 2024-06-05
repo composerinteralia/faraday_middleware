@@ -38,8 +38,8 @@ module FaradayMiddleware
     def process_response(env)
       env[:raw_body] = env[:body] if preserve_raw?(env)
       env[:body] = parse(env[:body])
-    rescue Faraday::Error::ParsingError => err
-      raise Faraday::Error::ParsingError.new(err, env[:response])
+    rescue Faraday::ParsingError => err
+      raise Faraday::ParsingError.new(err, env[:response])
     end
 
     # Parse the response body.
@@ -51,7 +51,7 @@ module FaradayMiddleware
           self.class.parser.call(body, @parser_options)
         rescue StandardError, SyntaxError => err
           raise err if err.is_a? SyntaxError and err.class.name != 'Psych::SyntaxError'
-          raise Faraday::Error::ParsingError, err
+          raise Faraday::ParsingError, err
         end
       else
         body
